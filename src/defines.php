@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Retry
+ * JBZoo Toolbox - Retry.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Retry
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Retry
+ * @see        https://github.com/JBZoo/Retry
  */
 
 declare(strict_types=1);
@@ -18,12 +17,8 @@ declare(strict_types=1);
 namespace JBZoo\Retry;
 
 /**
- * @param \Closure $callback
- * @param int      $maxAttempts
- * @param mixed    $strategy
- * @param int|null $waitCap
- * @param bool     $useJitter
- * @return mixed|null
+ * @param  mixed      $strategy
+ * @return null|mixed
  * @throws \Exception
  */
 function retry(
@@ -31,7 +26,7 @@ function retry(
     int $maxAttempts = Retry::DEFAULT_MAX_ATTEMPTS,
     $strategy = Retry::DEFAULT_STRATEGY,
     ?int $waitCap = null,
-    bool $useJitter = Retry::DEFAULT_JITTER_STATE
+    bool $useJitter = Retry::DEFAULT_JITTER_STATE,
 ) {
     return (new Retry($maxAttempts, $strategy, $waitCap, $useJitter))->run($callback);
 }

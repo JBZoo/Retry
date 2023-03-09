@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Retry
+ * JBZoo Toolbox - Retry.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Retry
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Retry
+ * @see        https://github.com/JBZoo/Retry
  */
 
 declare(strict_types=1);
@@ -24,48 +23,42 @@ use STS\Backoff\Backoff;
 
 use function JBZoo\Retry\retry;
 
-/**
- * Class RetryAliasesTest
- * @package JBZoo\PHPUnit
- */
 class RetryAliasesTest extends PHPUnit
 {
-    public function testSuccessWithDefaults()
+    public function testSuccessWithDefaults(): void
     {
-        $result = retry(function () {
-            return "success";
-        });
+        $result = retry(static fn () => 'success');
 
-        isSame("success", $result);
+        isSame('success', $result);
     }
 
-    public function testFailureWithDefaults()
+    public function testFailureWithDefaults(): void
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("failure");
+        $this->expectExceptionMessage('failure');
 
-        retry(function () {
-            throw new \RuntimeException("failure");
+        retry(static function (): void {
+            throw new \RuntimeException('failure');
         }, 2);
     }
 
-    public function testStrategy()
+    public function testStrategy(): void
     {
         $realNumberOfAttempts = 0;
-        $start = microtime(true);
+        $start                = \microtime(true);
 
         // We're going to run a test for 100 attempts, just to verify we were able to
         // set our own strategy with a low sleep time.
 
         try {
-            retry(function () use (&$realNumberOfAttempts) {
+            retry(static function () use (&$realNumberOfAttempts): void {
                 $realNumberOfAttempts++;
-                throw new \RuntimeException("failure");
+                throw new \RuntimeException('failure');
             }, 100, new ConstantStrategy(1));
         } catch (\Exception $exception) {
         }
 
-        $end = microtime(true);
+        $end = \microtime(true);
 
         isSame(100, $realNumberOfAttempts);
 
@@ -74,35 +67,35 @@ class RetryAliasesTest extends PHPUnit
         // We expect that this took just a bit over the 100ms that we slept
         isTrue(
             $elapsedMS > 100 && $elapsedMS < 300,
-            "Expected elapsedMS between 100 & 300, got: {$elapsedMS}"
+            "Expected elapsedMS between 100 & 300, got: {$elapsedMS}",
         );
     }
 
-    public function testWaitCap()
+    public function testWaitCap(): void
     {
-        $start = microtime(true);
+        $start = \microtime(true);
 
         // We're going to specify a really long sleep time, but with a short cap to override.
 
         try {
-            retry(function () {
-                throw new \RuntimeException("failure");
+            retry(static function (): void {
+                throw new \RuntimeException('failure');
             }, 2, new ConstantStrategy(1000), 100);
         } catch (\Exception $exception) {
         }
 
-        $end = microtime(true);
+        $end = \microtime(true);
 
         $elapsedMS = ($end - $start) * 1000;
 
         // We expect that this took just a bit over the 100ms that we slept
         isTrue(
             $elapsedMS > 90 && $elapsedMS < 250,
-            "Expected elapsedMS between 90 & 250, got: {$elapsedMS}"
+            "Expected elapsedMS between 90 & 250, got: {$elapsedMS}",
         );
     }
 
-    public function testClassAlias()
+    public function testClassAlias(): void
     {
         $backoff = new Backoff();
 
@@ -111,14 +104,12 @@ class RetryAliasesTest extends PHPUnit
         $backoff->disableJitter();
         isFalse($backoff->jitterEnabled());
 
-        $result = $backoff->run(function () {
-            return 123;
-        });
+        $result = $backoff->run(static fn () => 123);
 
         isSame(123, $result);
     }
 
-    public function testJitter()
+    public function testJitter(): void
     {
         $retry = new Retry();
         $retry->setStrategy(new ExponentialStrategy(100));
@@ -136,12 +127,10 @@ class RetryAliasesTest extends PHPUnit
         isSame($retry->getWaitTime(50), $retry->getWaitTime(50));
     }
 
-    public function testFunctionAlias()
+    public function testFunctionAlias(): void
     {
-        $result = \backoff(function () {
-            return "success";
-        });
+        $result = backoff(static fn () => 'success');
 
-        isSame("success", $result);
+        isSame('success', $result);
     }
 }
