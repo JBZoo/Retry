@@ -1,61 +1,69 @@
 {
-    "name"         : "jbzoo/retry",
-    "type"         : "library",
-    "description"  : "Tiny PHP library providing retry functionality with multiple backoff strategies and jitter support",
-    "license"      : "MIT",
-    "keywords"     : [
-        "jbzoo", "jitter", "retry", "backoff", "middleware",
-        "back-off", "retry-after", "failure", "restart", "retryable"
+    "name"              : "jbzoo/retry",
+    "type"              : "library",
+    "description"       : "Tiny PHP library providing retry functionality with multiple backoff strategies and jitter support",
+    "license"           : "MIT",
+    "keywords"          : [
+        "jbzoo",
+        "jitter",
+        "retry",
+        "backoff",
+        "middleware",
+        "back-off",
+        "retry-after",
+        "failure",
+        "restart",
+        "retryable"
     ],
 
-    "authors"      : [
+    "authors"           : [
         {
-            "name"  : "Joseph Szobody",
-            "email" : "joseph@stechstudio.com",
+            "name"  : "Denis Smetannikov",
+            "email" : "admin@jbzoo.com",
             "role"  : "lead"
         },
         {
-            "name"  : "Denis Smetannikov",
-            "email" : "admin@jbzoo.com"
+            "name"  : "Joseph Szobody",
+            "email" : "joseph@stechstudio.com",
+            "role"  : "author"
         }
     ],
 
-    "require"      : {
-        "php" : ">=7.4"
+    "minimum-stability" : "dev",
+    "prefer-stable"     : true,
+
+    "require"           : {
+        "php" : "^8.1"
     },
 
-    "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^4.0.1"
+    "require-dev"       : {
+        "jbzoo/toolbox-dev" : "7.x-dev"
     },
 
-    "replace"      : {
+    "replace"           : {
         "stechstudio/backoff" : "*"
     },
 
-    "autoload"     : {
-        "psr-4" : {
-            "JBZoo\\Retry\\" : "src"
-        },
+    "autoload"          : {
+        "psr-4" : {"JBZoo\\Retry\\" : "src"},
         "files" : [
             "src/defines.php",
             "src/aliases.php"
         ]
     },
 
-    "autoload-dev" : {
-        "classmap" : ["tests"]
+    "autoload-dev"      : {
+        "psr-4" : {"JBZoo\\PHPUnit\\" : "tests"}
     },
 
-    "config"       : {
+    "config"            : {
         "optimize-autoloader" : true,
-        "allow-plugins"       : {
-            "composer/package-versions-deprecated" : true
-        }
+        "allow-plugins"       : {"composer/package-versions-deprecated" : true}
     },
 
-    "extra"        : {
+    "extra"             : {
         "branch-alias" : {
-            "dev-master" : "2.x-dev"
+            "dev-master" : "7.x-dev"
         }
     }
 }

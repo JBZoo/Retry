@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Retry
+ * JBZoo Toolbox - Retry.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Retry
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Retry
+ * @see        https://github.com/JBZoo/Retry
  */
 
 declare(strict_types=1);
@@ -20,20 +19,16 @@ namespace JBZoo\PHPUnit;
 use JBZoo\Retry\Strategies\ConstantStrategy;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class ConstantStrategyTest
- * @package JBZoo\PHPUnit
- */
 class ConstantStrategyTest extends TestCase
 {
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $strategy = new ConstantStrategy();
 
         isSame(100, $strategy->getBase());
     }
 
-    public function testWaitTimes()
+    public function testWaitTimes(): void
     {
         $s = new ConstantStrategy(100);
 

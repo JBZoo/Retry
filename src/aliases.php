@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Retry
+ * JBZoo Toolbox - Retry.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Retry
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Retry
+ * @see        https://github.com/JBZoo/Retry
  */
 
 declare(strict_types=1);
@@ -25,19 +24,19 @@ use JBZoo\Retry\Strategies\PolynomialStrategy;
 
 use function JBZoo\Retry\retry;
 
-if (!function_exists('backoff')) {
+if (!\function_exists('backoff')) {
     /**
      * @phan-suppress PhanParamTooFewUnpack
      * @return mixed
      */
     function backoff()
     {
-        return retry(...func_get_args());
+        return retry(...\func_get_args());
     }
 }
 
 // @phan-suppress-next-line PhanUndeclaredClassReference
-if (!class_exists(STS\Backoff\Backoff::class)) {
+if (!\class_exists(STS\Backoff\Backoff::class)) {
     \class_alias(Retry::class, 'STS\Backoff\Backoff');
     \class_alias(ConstantStrategy::class, 'STS\Backoff\Strategies\ConstantStrategy');
     \class_alias(ExponentialStrategy::class, 'STS\Backoff\Strategies\ExponentialStrategy');

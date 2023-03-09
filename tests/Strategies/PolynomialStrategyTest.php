@@ -1,31 +1,29 @@
 <?php
 
 /**
- * JBZoo Toolbox - Retry
+ * JBZoo Toolbox - Retry.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Retry
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Retry
+ * @see        https://github.com/JBZoo/Retry
  */
 
 declare(strict_types=1);
 
-namespace JBZoo\PHPUnit;
+namespace JBZoo\PHPUnit\Strategies;
 
+use JBZoo\PHPUnit\PHPUnit;
 use JBZoo\Retry\Strategies\PolynomialStrategy;
 
-/**
- * Class PolynomialStrategyTest
- * @package JBZoo\PHPUnit
- */
+use function JBZoo\PHPUnit\isSame;
+
 class PolynomialStrategyTest extends PHPUnit
 {
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $strategy = new PolynomialStrategy();
 
@@ -33,7 +31,7 @@ class PolynomialStrategyTest extends PHPUnit
         isSame(2, $strategy->getDegree());
     }
 
-    public function testWaitTimes()
+    public function testWaitTimes(): void
     {
         $strategy = new PolynomialStrategy(200, 2);
 
