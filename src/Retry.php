@@ -40,7 +40,6 @@ class Retry
     public static int $defaultMaxAttempts = self::DEFAULT_MAX_ATTEMPTS;
 
     /**
-     * @var AbstractStrategy|string
      * @deprecated See README.md "Changing defaults"
      */
     public static string|AbstractStrategy $defaultStrategy = self::DEFAULT_STRATEGY;
@@ -85,7 +84,7 @@ class Retry
     protected $decider;
 
     /**
-     * This receive any exceptions we encounter.
+     * This receives any exceptions we encounter.
      * @var null|callable
      */
     protected $errorHandler;
@@ -195,15 +194,11 @@ class Retry
         return $this;
     }
 
-    /**
-     * @return null|mixed
-     * @throws \Exception
-     */
-    public function run(\Closure $callback)
+    public function run(\Closure $callback): mixed
     {
         $attempt = 0;
-        $try = true;
-        $result = null;
+        $try     = true;
+        $result  = null;
 
         while ($try) {
             $exceptionExternal = null;
@@ -214,16 +209,25 @@ class Retry
                 $result = $callback($attempt + 1, $this->getMaxAttempts(), $this);
             } catch (\Exception $exception) {
                 $this->exceptions[] = $exception;
-                $exceptionExternal = $exception;
+                $exceptionExternal  = $exception;
             } catch (\Throwable $exception) {
+                // @phpstan-ignore-next-line
                 if ($exception instanceof \Error) {
                     $exception = new \Exception($exception->getMessage(), $exception->getCode(), $exception);
                 }
                 $this->exceptions[] = $exception;
-                $exceptionExternal = $exception;
+                $exceptionExternal  = $exception;
             }
 
-            $try = \call_user_func($this->decider, ++$attempt, $this->getMaxAttempts(), $result, $exceptionExternal);
+            $attempt++;
+
+            $try = (bool)\call_user_func(
+                $this->decider,
+                $attempt,
+                $this->getMaxAttempts(),
+                $result,
+                $exceptionExternal,
+            );
 
             if ($try && isset($this->errorHandler)) {
                 \call_user_func($this->errorHandler, $exceptionExternal, $attempt, $this->getMaxAttempts());
@@ -263,7 +267,7 @@ class Retry
         $maxTimeForUSleep = 10 ** 6;
 
         // Helper vars. No magic numbers!
-        $divider1k = 1000;
+        $divider1k  = 1000;
         $divider1kk = $divider1k * $divider1k;
 
         $microSeconds = $this->getWaitTime($attempt) * $divider1k;
@@ -271,7 +275,7 @@ class Retry
         // It solves cross-platform issue. Check, if it's more than 1 sec.
         // See notes https://www.php.net/manual/en/function.usleep.php
         if ($microSeconds >= $maxTimeForUSleep) {
-            $seconds = $microSeconds / $divider1kk;
+            $seconds         = $microSeconds / $divider1kk;
             $partInMcSeconds = \fmod($seconds, 1) * $divider1kk;
 
             \sleep(\abs((int)$seconds)); // It works with seconds
@@ -300,11 +304,14 @@ class Retry
      *                        (or any other instance that has an __invoke method), a callback function, or
      *                        an integer (which we interpret to mean you want a ConstantStrategy)
      */
-    protected function buildStrategy($strategy): callable
+    protected function buildStrategy(mixed $strategy): callable
     {
         if (\is_string($strategy) && \array_key_exists($strategy, $this->strategies)) {
-            /** @var callable $result */
-            return new $this->strategies[$strategy]();
+            $result = new $this->strategies[$strategy]();
+            if (\is_callable($result)) {
+                return $result;
+            }
+            throw new \InvalidArgumentException("Invalid strategy: {$strategy}");
         }
 
         if (\is_callable($strategy)) {
@@ -355,11 +362,11 @@ class Retry
             $result = null,
             ?\Exception $exception = null,
         ): bool {
-            if ($currentAttempt >= $maxAttempts && $exception) {
+            if ($currentAttempt >= $maxAttempts && $exception !== null) {
                 throw $exception;
             }
 
-            return $currentAttempt < $maxAttempts && $exception;
+            return $currentAttempt < $maxAttempts && $exception !== null;
         };
     }
 }
