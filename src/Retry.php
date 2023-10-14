@@ -42,7 +42,7 @@ class Retry
     /**
      * @deprecated See README.md "Changing defaults"
      */
-    public static string|AbstractStrategy $defaultStrategy = self::DEFAULT_STRATEGY;
+    public static AbstractStrategy|string $defaultStrategy = self::DEFAULT_STRATEGY;
 
     /** @deprecated See README.md "Changing defaults" */
     public static bool $defaultJitterEnabled = self::DEFAULT_JITTER_STATE;
