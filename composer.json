@@ -37,7 +37,7 @@
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^7.0"
+        "jbzoo/toolbox-dev" : "^7.1"
     },
 
     "replace"           : {
