@@ -16,6 +16,9 @@ declare(strict_types=1);
 
 namespace JBZoo\Retry\Strategies;
 
-class Exception extends \JBZoo\Retry\Exception
+/**
+ * @psalm-suppress UnusedClass
+ */
+final class Exception extends \JBZoo\Retry\Exception
 {
 }

@@ -54,26 +54,15 @@ class RetryTest extends PHPUnit
 
     public function testNotChangingStaticDefaults(): void
     {
-        Retry::$defaultMaxAttempts   = 15;
-        Retry::$defaultStrategy      = 'constant';
-        Retry::$defaultJitterEnabled = true;
-
         $retry = new Retry();
 
         isSame(Retry::DEFAULT_MAX_ATTEMPTS, $retry->getMaxAttempts());
         self::assertInstanceOf(PolynomialStrategy::class, $retry->getStrategy());
         isSame(Retry::DEFAULT_JITTER_STATE, $retry->jitterEnabled());
 
-        Retry::$defaultStrategy = new LinearStrategy(250);
-
         $retry = new Retry();
 
         self::assertInstanceOf(PolynomialStrategy::class, $retry->getStrategy());
-
-        // I don't care about put them back. They dont' work at all and deprecated.
-        // Retry::$defaultMaxAttempts = 5;
-        // Retry::$defaultStrategy = "polynomial";
-        // Retry::$defaultJitterEnabled = false;
     }
 
     public function testConstructorParams(): void

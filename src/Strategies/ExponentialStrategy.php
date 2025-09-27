@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Retry\Strategies;
 
-class ExponentialStrategy extends AbstractStrategy
+final class ExponentialStrategy extends AbstractStrategy
 {
     public function getWaitTime(int $attempt): int
     {

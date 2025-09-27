@@ -27,9 +27,8 @@ use function JBZoo\Retry\retry;
 if (!\function_exists('backoff')) {
     /**
      * @phan-suppress PhanParamTooFewUnpack
-     * @return mixed
      */
-    function backoff()
+    function backoff(): mixed
     {
         return retry(...\func_get_args());
     }

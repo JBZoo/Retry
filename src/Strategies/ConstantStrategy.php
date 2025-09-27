@@ -16,10 +16,10 @@ declare(strict_types=1);
 
 namespace JBZoo\Retry\Strategies;
 
-class ConstantStrategy extends AbstractStrategy
+final class ConstantStrategy extends AbstractStrategy
 {
     /**
-     * @phan-suppress PhanUnusedPublicMethodParameter
+     * @phan-suppress PhanUnusedPublicFinalMethodParameter
      */
     public function getWaitTime(int $attempt): int
     {
