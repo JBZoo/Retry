@@ -3,36 +3,43 @@
 [![CI](https://github.com/JBZoo/Retry/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JBZoo/Retry/actions/workflows/main.yml?query=branch%3Amaster)    [![Coverage Status](https://coveralls.io/repos/github/JBZoo/Retry/badge.svg?branch=master)](https://coveralls.io/github/JBZoo/Retry?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Retry/coverage.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![Psalm Level](https://shepherd.dev/github/JBZoo/Retry/level.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![CodeFactor](https://www.codefactor.io/repository/github/jbzoo/retry/badge)](https://www.codefactor.io/repository/github/jbzoo/retry/issues)
 [![Stable Version](https://poser.pugx.org/jbzoo/retry/version)](https://packagist.org/packages/jbzoo/retry/)    [![Total Downloads](https://poser.pugx.org/jbzoo/retry/downloads)](https://packagist.org/packages/jbzoo/retry/stats)    [![Dependents](https://poser.pugx.org/jbzoo/retry/dependents)](https://packagist.org/packages/jbzoo/retry/dependents?order_by=downloads)    [![GitHub License](https://img.shields.io/github/license/jbzoo/retry)](https://github.com/JBZoo/Retry/blob/master/LICENSE)
 
+Tiny PHP library providing retry functionality with multiple backoff strategies and jitter support.
 
- 1. 4 retry strategies (plus the ability to use your own)
- 2. Optional jitter / randomness to spread out retries and minimize collisions
- 3. Wait time cap
- 4. Callbacks for custom retry logic or error handling
+## Features
 
+- **4 retry strategies** (plus the ability to use your own)
+- **Optional jitter/randomness** to spread out retries and minimize collisions
+- **Wait time cap** to limit maximum retry delays
+- **Custom callbacks** for retry logic and error handling
+- **Type-safe** with strict typing and comprehensive test coverage
+- **Backward compatible** with [stechstudio/backoff](https://github.com/stechstudio/backoff)
 
-Notes:
- * This is a fork. You can find the original project [here](https://github.com/stechstudio/backoff).
- * Now the codebase super strict, and it's covered with tests as much as possible. The original author is great, but the code was smelly :) It's sooo easy, and it took just one my evening... ;)
- * I don't like wording "backoff" in the code. Yeah, it's fun but... I believe "retry" is more obvious. Sorry :)
- * There is nothing wrong to use import instead of global namespace for function. Don't use old-school practices.
- * Static variables with default values are deprecated and disabled. See dump of thoughts below.
- * New methods `setJitterPercent|getJitterPercent`, `setJitterMinCap|getJitterMinCap` to have fine-tuning.
- * My project has [aliases](./src/aliases.php) for backward compatibility with the original. ;)
+## Requirements
+
+- PHP 8.2 or higher
+
+## About This Fork
+
+This library is a modernized fork of [stechstudio/backoff](https://github.com/stechstudio/backoff) with several improvements:
+
+- **Strict typing** and comprehensive test coverage
+- **Explicit configuration** instead of global static defaults
+- **Better naming** - "retry" terminology instead of "backoff"
+- **Enhanced jitter control** with `setJitterPercent()` and `setJitterMinCap()` methods
+- **Backward compatibility** through [aliases](./src/aliases.php)
 
 
 ## Installation
 
-```
+```bash
 composer require jbzoo/retry
 ```
 
-## Defaults
+## Quick Start
 
-This library provides sane defaults, so you can hopefully just jump in for most of your use cases.
+This library provides sane defaults for immediate use. By default: quadratic strategy with 100ms base time (`attempt^2 * 100`), maximum 5 retries, and no jitter.
 
-By default, the retry is quadratic with a 100ms base time (`attempt^2 * 100`), a max of 5 retries, and no jitter.
-
-## Quickstart
+### Simple Function Usage
 
 The simplest way to use Retry is with the `retry` helper function:
 
@@ -48,11 +55,11 @@ If successful `$result` will contain the result of the closure. If max attempts 
 
 You can of course provide other options via the helper method if needed.
 
-Method parameters are `$callback`, `$maxAttempts`, `$strategy`, `$waitCap`, `$useJitter`.
+Parameters: `$callback`, `$maxAttempts`, `$strategy`, `$waitCap`, `$useJitter`.
 
-## Retry class usage
+### Class-Based Usage
 
-The Retry class constructor parameters are `$maxAttempts`, `$strategy`, `$waitCap`, `$useJitter`.
+Constructor parameters: `$maxAttempts`, `$strategy`, `$waitCap`, `$useJitter`.
 
 ```php
 use JBZoo\Retry\Retry;
@@ -63,12 +70,13 @@ $result = $retry->run(function() {
 });
 ```
 
-Or if you are injecting the Retry class with a dependency container, you can set it up with setters after the fact. Note that setters are chainable.
+### Fluent Interface
+
+For dependency injection scenarios, use chainable setters:
 
 ```php
 use JBZoo\Retry\Retry;
 
-// Assuming a fresh instance of $retry was handed to you
 $result = (new Retry())
     ->setStrategy('constant')
     ->setMaxAttempts(10)
@@ -78,191 +86,160 @@ $result = (new Retry())
     });
 ```
 
-## Changing defaults
+## Configuration Philosophy
 
-**Important Note:** It's a fork. So I left it here just for backward compatibility. Static variables are deprecated and don't work at all!
+This library enforces **explicit configuration** over global defaults. Unlike the original library, static configuration variables are deprecated and disabled. This design choice ensures:
 
-This is terrible practice! Explicit is better than implicit. ;)
+- Different parts of your project can have completely different retry settings
+- No conflicts with third-party libraries using their own defaults
+- Clear, explicit dependency injection patterns
 
- * Example #1. Different parts of your project can have completely different settings.
- * Example #2. Imagine what would happen if some third3-party library (in `./vendor`) uses its own default settings. Let's fight!
- * Example #3. It's just an attempt to store variables in a global namespace. Do you see it?
+Use dependency injection or direct instantiation instead of global configuration.
 
+## Retry Strategies
 
-Retry::$defaultStrategy;
+Four built-in strategies are available, each with a default base time of 100 milliseconds:
 
-Just use dependencies injection or so and don't warm your head.
-
-## Strategies
-
-There are four built-in strategies available: constant, linear, polynomial, and exponential.
-
-The default base time for all strategies is 100 milliseconds.
-
-### Constant
-
+### Constant Strategy
+Sleeps for a fixed time on each retry.
 ```php
 use JBZoo\Retry\Strategies\ConstantStrategy;
-
-$strategy = new ConstantStrategy(500);
+$strategy = new ConstantStrategy(500); // 500ms each retry
 ```
 
-This strategy will sleep for 500 milliseconds on each retry loop.
-
-### Linear
-
+### Linear Strategy
+Sleep time increases linearly: `attempt × baseTime`.
 ```php
 use JBZoo\Retry\Strategies\LinearStrategy;
-$strategy = new LinearStrategy(200);
+$strategy = new LinearStrategy(200); // 200ms, 400ms, 600ms...
 ```
 
-This strategy will sleep for `attempt * baseTime`, providing linear retry starting at 200 milliseconds.
-
-### Polynomial
-
+### Polynomial Strategy
+Sleep time follows polynomial growth: `(attempt^degree) × baseTime`.
 ```php
 use JBZoo\Retry\Strategies\PolynomialStrategy;
-$strategy = new PolynomialStrategy(100, 3);
+$strategy = new PolynomialStrategy(100, 3); // (attempt^3) × 100ms
+// Default degree is 2 (quadratic): 100ms, 400ms, 900ms...
 ```
 
-This strategy will sleep for `(attempt^degree) * baseTime`, so in this case `(attempt^3) * 100`.
-
-The default degree if none provided is 2, effectively quadratic time.
-
-### Exponential
-
+### Exponential Strategy
+Sleep time grows exponentially: `(2^attempt) × baseTime`.
 ```php
 use JBZoo\Retry\Strategies\ExponentialStrategy;
-$strategy = new ExponentialStrategy(100);
+$strategy = new ExponentialStrategy(100); // 200ms, 400ms, 800ms...
 ```
 
-This strategy will sleep for `(2^attempt) * baseTime`.
+## Strategy Usage Options
 
-## Specifying strategy
-
-In our earlier code examples we specified the strategy as a string:
+### String-Based Configuration
 
 ```php
 use JBZoo\Retry\Retry;
 use function JBZoo\Retry\retry;
 
-retry(function() {
-    // ...
-}, 10, 'constant');
-
-// OR
-
+retry(fn() => doWork(), 10, 'constant'); // Uses ConstantStrategy with 100ms default
 $retry = new Retry(10, 'constant');
 ```
 
-This would use the `ConstantStrategy` with defaults, effectively giving you a 100 millisecond sleep time.
-
-You can create the strategy instance yourself in order to modify these defaults:
+### Instance-Based Configuration
 
 ```php
 use JBZoo\Retry\Retry;
 use JBZoo\Retry\Strategies\LinearStrategy;
 use function JBZoo\Retry\retry;
 
-retry(function() {
-    // ...
-}, 10, new LinearStrategy(500));
-
-// OR
-
+retry(fn() => doWork(), 10, new LinearStrategy(500));
 $retry = new Retry(10, new LinearStrategy(500));
 ```
 
-You can also pass in an integer as the strategy, will translate to a ConstantStrategy with the integer as the base time in milliseconds:
+### Integer-Based Configuration
+Passing an integer creates a ConstantStrategy with that base time:
 
 ```php
-use JBZoo\Retry\Retry;
-use function JBZoo\Retry\retry;
-
-retry(function() {
-    // ...
-}, 10, 1000);
-
-// OR
-
+retry(fn() => doWork(), 10, 1000); // 1000ms constant delay
 $retry = new Retry(10, 1000);
 ```
 
-Finally, you can pass in a closure as the strategy if you wish. This closure should receive an integer `attempt` and return a sleep time in milliseconds.
+### Custom Closure Strategy
+Define your own strategy with a closure:
 
 ```php
-use JBZoo\Retry\Retry;
-use function JBZoo\Retry\retry;
-
-retry(function() {
-    // ...
-}, 10, function($attempt) {
-    return (100 * $attempt) + 5000;
-});
-
-// OR
+// Closure receives attempt number and returns sleep time in milliseconds
+retry(fn() => doWork(), 10, fn($attempt) => (100 * $attempt) + 5000);
 
 $retry = new Retry(10);
-$retry->setStrategy(function($attempt) {
-    return (100 * $attempt) + 5000;
-});
+$retry->setStrategy(fn($attempt) => (100 * $attempt) + 5000);
 ```
 
-## Wait cap
+## Wait Cap
 
-You may want to use a fast growing retry time (like exponential) but then also set a max wait time so that it levels out after a while.
+Limit maximum wait time for fast-growing strategies (like exponential):
 
-This cap can be provided as the fourth argument to the `retry` helper function, or using the `setWaitCap()` method on the Retry class.
+```php
+retry(fn() => doWork(), 10, 'exponential', 5000); // Cap at 5 seconds
+$retry = new Retry()->setWaitCap(5000);
+```
 
 ## Jitter
 
-If you have a lot of clients starting a job at the same time and encountering failures, any of the above retry strategies could mean the workers continue to collide at each retry.
+Prevent retry collisions by adding randomness to wait times. This is crucial when multiple clients might retry simultaneously.
 
-The solution for this is to add randomness. See here for a good explanation:
+```php
+retry(fn() => doWork(), 10, 'exponential', null, true); // Enable jitter
+$retry = new Retry()->enableJitter();
+```
 
-https://aws.amazon.com/ru/blogs/architecture/exponential-backoff-and-jitter
+### Advanced Jitter Control
 
-You can enable jitter by passing `true` in as the fifth argument to the `retry` helper function, or by using the `enableJitter()` method on the Retry class.
+Fine-tune jitter behavior with additional methods:
 
-By default, we use the "FullJitter" approach outlined in the above article, where a random number between 0 and the sleep time provided by your selected strategy is used.
+```php
+$retry = new Retry()
+    ->enableJitter()
+    ->setJitterPercent(75)    // Use 75% of calculated wait time as max
+    ->setJitterMinCap(100);   // Minimum jitter time of 100ms
+```
 
-But you can change the maximum time for Jitter with method `setJitterPercent(). It's 100 by default. Also you can set min value for jitter with `setJitterMinCap` (it's `0` by default).
+By default, this library uses "FullJitter" - a random time between 0 and the calculated wait time. See [AWS's excellent explanation](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) for more details.
 
-## Custom retry decider
+## Advanced Usage
 
-By default, Retry will retry if an exception is encountered, and if it has not yet hit max retries.
+### Custom Retry Logic
 
-You may provide your own retry decider for more advanced use cases. Perhaps you want to retry based on time rather than number of retries, or perhaps there are scenarios where you would want retry even when an exception was not encountered.
-
-Provide the decider as a callback, or an instance of a class with an `__invoke` method. Retry will hand it four parameters: the current attempt, max attempts, the last result received, and the exception if one was encountered. Your decider needs to return true or false.
+Implement custom retry conditions beyond simple exception handling:
 
 ```php
 use JBZoo\Retry\Retry;
 
 $retry = new Retry();
 $retry->setDecider(function($attempt, $maxAttempts, $result, $exception = null) {
-    return someCustomLogic();
+    // Custom logic: retry based on time, specific exceptions, return values, etc.
+    return $attempt < 3 && ($exception instanceof SpecificException);
 });
 ```
 
-## Error handler callback
+### Error Handling
 
-You can provide a custom error handler to be notified anytime an exception occurs, even if we have yet to reach max attempts. This is a useful place to do logging for example.
+Add logging or monitoring for retry attempts:
 
 ```php
 use JBZoo\Retry\Retry;
 
 $retry = new Retry();
 $retry->setErrorHandler(function($exception, $attempt, $maxAttempts) {
-    Log::error("On run {$attempt}/{$maxAttempts} we hit a problem: {$exception->getMessage()}");
+    error_log("Retry {$attempt}/{$maxAttempts}: {$exception->getMessage()}");
 });
 ```
 
+## Development
 
-## Unit tests and check code style
-```sh
-make update
-make test-all
+### Running Tests
+
+```bash
+make update    # Install dependencies
+make test      # Run PHPUnit tests
+make codestyle # Run code quality checks
+make test-all  # Run both tests and code style
 ```
 
 
