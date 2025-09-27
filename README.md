@@ -1,6 +1,6 @@
 # JBZoo / Retry
 
-[![CI](https://github.com/JBZoo/Retry/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JBZoo/Retry/actions/workflows/main.yml?query=branch%3Amaster)    [![Coverage Status](https://coveralls.io/repos/github/JBZoo/Retry/badge.svg?branch=master)](https://coveralls.io/github/JBZoo/Retry?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Retry/coverage.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![Psalm Level](https://shepherd.dev/github/JBZoo/Retry/level.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![CodeFactor](https://www.codefactor.io/repository/github/jbzoo/retry/badge)](https://www.codefactor.io/repository/github/jbzoo/retry/issues)    
+[![CI](https://github.com/JBZoo/Retry/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JBZoo/Retry/actions/workflows/main.yml?query=branch%3Amaster)    [![Coverage Status](https://coveralls.io/repos/github/JBZoo/Retry/badge.svg?branch=master)](https://coveralls.io/github/JBZoo/Retry?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Retry/coverage.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![Psalm Level](https://shepherd.dev/github/JBZoo/Retry/level.svg)](https://shepherd.dev/github/JBZoo/Retry)    [![CodeFactor](https://www.codefactor.io/repository/github/jbzoo/retry/badge)](https://www.codefactor.io/repository/github/jbzoo/retry/issues)
 [![Stable Version](https://poser.pugx.org/jbzoo/retry/version)](https://packagist.org/packages/jbzoo/retry/)    [![Total Downloads](https://poser.pugx.org/jbzoo/retry/downloads)](https://packagist.org/packages/jbzoo/retry/stats)    [![Dependents](https://poser.pugx.org/jbzoo/retry/dependents)](https://packagist.org/packages/jbzoo/retry/dependents?order_by=downloads)    [![GitHub License](https://img.shields.io/github/license/jbzoo/retry)](https://github.com/JBZoo/Retry/blob/master/LICENSE)
 
 
@@ -12,7 +12,7 @@
 
 Notes:
  * This is a fork. You can find the original project [here](https://github.com/stechstudio/backoff).
- * Now the codebase super strict, and it's covered with tests as much as possible. The original author is great, but the code was smelly :) It's sooo easy, and it took just one my evening... ;) 
+ * Now the codebase super strict, and it's covered with tests as much as possible. The original author is great, but the code was smelly :) It's sooo easy, and it took just one my evening... ;)
  * I don't like wording "backoff" in the code. Yeah, it's fun but... I believe "retry" is more obvious. Sorry :)
  * There is nothing wrong to use import instead of global namespace for function. Don't use old-school practices.
  * Static variables with default values are deprecated and disabled. See dump of thoughts below.
@@ -89,14 +89,7 @@ This is terrible practice! Explicit is better than implicit. ;)
  * Example #3. It's just an attempt to store variables in a global namespace. Do you see it?
 
 
-So the next variables are deprecated, and they don't influence anything.
-```php
-use JBZoo\Retry\Retry;
-
-Retry::$defaultMaxAttempts;
 Retry::$defaultStrategy;
-Retry::$defaultJitterEnabled;
-```
 
 Just use dependencies injection or so and don't warm your head.
 
@@ -286,5 +279,5 @@ MIT
 - [Mermaid-PHP](https://github.com/JBZoo/Mermaid-PHP) - Generate diagrams and flowcharts with the help of the mermaid script language.
 - [Utils](https://github.com/JBZoo/Utils) - Collection of useful PHP functions, mini-classes, and snippets for every day.
 - [Image](https://github.com/JBZoo/Image) - Package provides object-oriented way to manipulate with images as simple as possible.
-- [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array. 
+- [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array.
 - [SimpleTypes](https://github.com/JBZoo/SimpleTypes) - Converting any values and measures - money, weight, exchange rates, length, ...

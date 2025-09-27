@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Retry\Strategies;
 
-class PolynomialStrategy extends AbstractStrategy
+final class PolynomialStrategy extends AbstractStrategy
 {
     protected const DEFAULT_DEGREE = 2;
 

@@ -16,13 +16,12 @@ declare(strict_types=1);
 
 namespace JBZoo\Retry;
 
-use JBZoo\Retry\Strategies\AbstractStrategy;
 use JBZoo\Retry\Strategies\ConstantStrategy;
 use JBZoo\Retry\Strategies\ExponentialStrategy;
 use JBZoo\Retry\Strategies\LinearStrategy;
 use JBZoo\Retry\Strategies\PolynomialStrategy;
 
-class Retry
+final class Retry
 {
     // Fallback values and global defaults
     public const DEFAULT_MAX_ATTEMPTS   = 5;
@@ -36,58 +35,47 @@ class Retry
     public const STRATEGY_POLYNOMIAL  = 'polynomial';
     public const STRATEGY_EXPONENTIAL = 'exponential';
 
-    /** @deprecated See README.md "Changing defaults" */
-    public static int $defaultMaxAttempts = self::DEFAULT_MAX_ATTEMPTS;
-
-    /**
-     * @deprecated See README.md "Changing defaults"
-     */
-    public static AbstractStrategy|string $defaultStrategy = self::DEFAULT_STRATEGY;
-
-    /** @deprecated See README.md "Changing defaults" */
-    public static bool $defaultJitterEnabled = self::DEFAULT_JITTER_STATE;
-
     /**
      * This callable should take an 'attempt' integer, and return a wait time in milliseconds.
      * @var callable
      */
-    protected $strategy;
+    private $strategy;
 
-    protected array $strategies = [
+    private array $strategies = [
         self::STRATEGY_CONSTANT    => ConstantStrategy::class,
         self::STRATEGY_LINEAR      => LinearStrategy::class,
         self::STRATEGY_POLYNOMIAL  => PolynomialStrategy::class,
         self::STRATEGY_EXPONENTIAL => ExponentialStrategy::class,
     ];
 
-    protected int $maxAttempts;
+    private int $maxAttempts;
 
     /**
      * The max wait time you want to allow, regardless of what the strategy says.
      * @var null|int In milliseconds
      */
-    protected ?int $waitCap;
+    private ?int $waitCap;
 
-    protected bool $useJitter = false;
+    private bool $useJitter = false;
 
-    protected int $jitterPercent = self::DEFAULT_JITTER_PERCENT;
+    private int $jitterPercent = self::DEFAULT_JITTER_PERCENT;
 
-    protected int $jitterMinTime = 0;
+    private int $jitterMinTime = 0;
 
     /** @var array|non-empty-array<int,\Exception>|non-empty-array<int,\Throwable> */
-    protected array $exceptions = [];
+    private array $exceptions = [];
 
     /**
      * This will decide whether to retry or not.
      * @var callable
      */
-    protected $decider;
+    private $decider;
 
     /**
      * This receives any exceptions we encounter.
      * @var null|callable
      */
-    protected $errorHandler;
+    private $errorHandler;
 
     public function __construct(
         int $maxAttempts = self::DEFAULT_MAX_ATTEMPTS,
@@ -297,6 +285,11 @@ class Retry
         return $this->jitter($this->cap($waitTime));
     }
 
+    public function getExceptions(): array
+    {
+        return $this->exceptions;
+    }
+
     /**
      * Builds a callable strategy.
      *
@@ -304,7 +297,7 @@ class Retry
      *                        (or any other instance that has an __invoke method), a callback function, or
      *                        an integer (which we interpret to mean you want a ConstantStrategy)
      */
-    protected function buildStrategy(mixed $strategy): callable
+    private function buildStrategy(mixed $strategy): callable
     {
         if (\is_string($strategy) && \array_key_exists($strategy, $this->strategies)) {
             $result = new $this->strategies[$strategy]();
@@ -325,14 +318,14 @@ class Retry
         throw new \InvalidArgumentException("Invalid strategy: {$strategy}");
     }
 
-    protected function cap(int $waitTime): int
+    private function cap(int $waitTime): int
     {
         $waitCap = (int)$this->getWaitCap();
 
         return $waitCap > 0 ? \min($waitCap, $waitTime) : $waitTime;
     }
 
-    protected function jitter(int $waitTime): int
+    private function jitter(int $waitTime): int
     {
         if ($this->jitterEnabled()) {
             $minValue = $this->jitterMinTime;
@@ -351,15 +344,14 @@ class Retry
     /**
      * Gets a default decider that simply check exceptions and max-attempts.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @psalm-suppress MissingClosureParamType
      */
-    protected static function getDefaultDecider(): \Closure
+    private static function getDefaultDecider(): \Closure
     {
         return static function (
             int $currentAttempt,
             int $maxAttempts,
             /** @phan-suppress-next-line PhanUnusedClosureParameter */
-            $result = null,
+            mixed $result = null,
             ?\Exception $exception = null,
         ): bool {
             if ($currentAttempt >= $maxAttempts && $exception !== null) {
