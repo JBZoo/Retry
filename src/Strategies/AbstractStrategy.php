@@ -18,11 +18,8 @@ namespace JBZoo\Retry\Strategies;
 
 abstract class AbstractStrategy
 {
-    /**
-     * Base wait time in ms.
-     * @var int
-     */
-    protected const DEFAULT_BASE = 100;
+    /** Base wait time in ms. */
+    protected const int DEFAULT_BASE = 100;
 
     /** @var int */
     protected $base;
