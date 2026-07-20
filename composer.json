@@ -33,11 +33,11 @@
     "prefer-stable"     : true,
 
     "require"           : {
-        "php" : "^8.2"
+        "php" : "^8.3"
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^7.2"
+        "jbzoo/toolbox-dev" : "^8.0"
     },
 
     "replace"           : {
@@ -63,7 +63,7 @@
 
     "extra"             : {
         "branch-alias" : {
-            "dev-master" : "7.x-dev"
+            "dev-master" : "8.x-dev"
         }
     }
 }

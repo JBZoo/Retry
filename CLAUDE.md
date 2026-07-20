@@ -12,7 +12,7 @@ This project uses a Makefile with commands from `jbzoo/toolbox-dev`. The primary
 - `make test-all` - Run both tests and code style checks
 - `make report-all` - Generate comprehensive reports (coverage, metrics, etc.)
 
-The project requires PHP 8.2+ and uses `jbzoo/toolbox-dev` for development tooling.
+The project requires PHP 8.3+ and uses `jbzoo/toolbox-dev` for development tooling.
 
 ## Architecture Overview
 
@@ -52,7 +52,7 @@ retry($callback, $maxAttempts, $strategy, $waitCap, $useJitter);
 - PHPUnit tests in `tests/` directory
 - Strategy-specific tests in `tests/Strategies/`
 - Package integration tests and alias compatibility tests
-- CI runs tests on PHP 8.2, 8.3, 8.4 with both `--prefer-lowest` and latest dependencies
+- CI runs tests on PHP 8.3, 8.4, 8.5 with both `--prefer-lowest` and latest dependencies
 
 ### Development Notes
 - Project enforces strict typing (`declare(strict_types=1)`)
